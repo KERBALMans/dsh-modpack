@@ -356,7 +356,7 @@ git push -u origin main
 
 给仓库加上 `dsh-plugin` topic，其他 DSH 用户就能在 GitHub 上搜到它。
 
-> ⚠️ **不想装 git、打算在网页上拖？** 网页上传对**文件**很稳，对**文件夹**不可靠：Firefox 常常完全没反应，一次拖多个往往只吃第一个，而空仓库连能接收拖拽的虚线框都没有。[UPLOAD-GUIDE.md](UPLOAD-GUIDE.md) 第 3.3 节给了纯鼠标的替代办法——先拖 13 个根文件，再用 *Add file → Create new file* 在文件名里打 `/` 把目录挖出来、把剩下的文件拖进各目录页面；第 3.4 节是 GitHub Desktop，一次传完全部 44 个文件。三个文件夹传不上去也不影响别人搜索和安装（Release 里的 tgz 什么都不缺），但 `.github` 与 `scripts` 要么都传、要么都不传，否则 CI 会红。
+> ⚠️ **不想装 git、打算在网页上拖？** 网页上传对**文件**很稳，对**文件夹**不可靠：Firefox 常常完全没反应，一次拖多个往往只吃第一个，而空仓库连能接收拖拽的虚线框都没有。[UPLOAD-GUIDE.md](UPLOAD-GUIDE.md) 第 3.3 节给了纯鼠标的替代办法——先拖 12 个普通根文件（`.gitignore` 与 `.gitattributes` 单独新建），再用 *Add file → Create new file* 在文件名里打 `/` 把目录挖出来、把剩下的文件拖进各目录页面；第 3.4 节是 GitHub Desktop，一次传完全部 49 个文件。三个文件夹传不上去也不影响别人搜索和安装（Release 里的 tgz 什么都不缺），但 `.github` 与 `scripts` 要么都传、要么都不传，否则 CI 会红。
 
 如果这台机器上没有装 git，仓库里附带了一个不需要 git 的发布脚本，它直接调用 GitHub API 建立**一个干净的首个提交**：
 
