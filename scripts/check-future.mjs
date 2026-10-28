@@ -28,10 +28,12 @@
  *
  *   node scripts/check-future.mjs
  */
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { readSource } from './source-text.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(HERE, '..')
@@ -43,8 +45,8 @@ function check(label, condition, detail) {
   if (!condition) problems.push(detail === undefined ? label : `${label} — ${JSON.stringify(detail)}`)
 }
 
-const hostSource = readFileSync(HOST, 'utf8')
-const clientSource = readFileSync(CLIENT, 'utf8')
+const hostSource = readSource(HOST)
+const clientSource = readSource(CLIENT)
 
 /** The body of a `name(...) { ... }` declaration, braces balanced. */
 function sliceFunction(source, marker) {

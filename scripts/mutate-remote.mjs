@@ -17,6 +17,8 @@ import { execFileSync } from 'node:child_process'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { normalizeEol } from './source-text.mjs'
+
 const here = dirname(fileURLToPath(import.meta.url))
 const root = join(here, '..')
 const target = join(root, 'index.js')
@@ -78,7 +80,11 @@ const MUTATIONS = [
   },
 ]
 
-const original = readFileSync(target, 'utf8')
+// The patterns below span line breaks, so they are matched against LF text on
+// every platform; `raw` is what actually goes back on disk afterwards. See
+// scripts/source-text.mjs.
+const raw = readFileSync(target, 'utf8')
+const original = normalizeEol(raw)
 copyFileSync(target, backup)
 
 const results = []
@@ -129,7 +135,7 @@ try {
     }
   }
 } finally {
-  writeFileSync(target, original, 'utf8')
+  writeFileSync(target, raw, 'utf8')
   try { unlinkSync(backup) } catch { /* already gone */ }
 }
 

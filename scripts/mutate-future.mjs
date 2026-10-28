@@ -23,6 +23,8 @@ import { readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { normalizeEol } from './source-text.mjs'
+
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(HERE, '..')
 
@@ -113,13 +115,21 @@ const MUTATIONS = [
   },
 ]
 
+// `raws` is the on-disk text and what gets restored; `originals` is the same
+// text with CRLF collapsed, because the patterns below are authored in LF.
+// See scripts/source-text.mjs.
+const raws = new Map()
 const originals = new Map()
 
 let survived = 0
 
 try {
   for (const mutation of MUTATIONS) {
-    if (!originals.has(mutation.file)) originals.set(mutation.file, readFileSync(mutation.file, 'utf8'))
+    if (!originals.has(mutation.file)) {
+      const raw = readFileSync(mutation.file, 'utf8')
+      raws.set(mutation.file, raw)
+      originals.set(mutation.file, normalizeEol(raw))
+    }
     const original = originals.get(mutation.file)
 
     let next = original
@@ -149,7 +159,7 @@ try {
       output = String((err.stdout || '') + (err.stderr || ''))
     }
 
-    writeFileSync(mutation.file, original, 'utf8')
+    writeFileSync(mutation.file, raws.get(mutation.file), 'utf8')
 
     if (failed) {
       const lines = output.split('\n').filter((line) => line.trim().startsWith('- '))
@@ -162,7 +172,7 @@ try {
     }
   }
 } finally {
-  for (const [file, original] of originals) writeFileSync(file, original, 'utf8')
+  for (const [file, raw] of raws) writeFileSync(file, raw, 'utf8')
   rmSync(join(ROOT, 'index.js.mutbak'), { force: true })
   rmSync(join(ROOT, 'client.js.mutbak'), { force: true })
 }

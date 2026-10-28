@@ -22,6 +22,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { normalizeEol } from './source-text.mjs'
+
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(HERE, '..')
 
@@ -180,7 +182,11 @@ const MUTATIONS = [
   },
 ]
 
-const originals = new Map(Object.entries(FILES).map(([key, path]) => [key, readFileSync(path, 'utf8')]))
+// `raws` is what is on disk and what gets restored; `originals` is the same
+// text with CRLF collapsed, because the patterns below are authored in LF.
+// See scripts/source-text.mjs.
+const raws = new Map(Object.entries(FILES).map(([key, path]) => [key, readFileSync(path, 'utf8')]))
+const originals = new Map([...raws].map(([key, text]) => [key, normalizeEol(text)]))
 let survived = 0
 
 try {
@@ -215,7 +221,7 @@ try {
       output = String((err.stdout || '') + (err.stderr || ''))
     }
 
-    writeFileSync(FILES[key], original, 'utf8')
+    writeFileSync(FILES[key], raws.get(key), 'utf8')
 
     if (failed) {
       const lines = output.split('\n').filter((line) => /^\s*(-|✗)\s/.test(line))
@@ -228,7 +234,7 @@ try {
     }
   }
 } finally {
-  for (const [key, path] of Object.entries(FILES)) writeFileSync(path, originals.get(key), 'utf8')
+  for (const [key, path] of Object.entries(FILES)) writeFileSync(path, raws.get(key), 'utf8')
 }
 
 if (survived > 0) {

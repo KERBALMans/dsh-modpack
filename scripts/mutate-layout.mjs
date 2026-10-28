@@ -28,6 +28,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { normalizeEol } from './source-text.mjs'
+
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(HERE, '..')
 const CLIENT = join(ROOT, 'client.js')
@@ -176,7 +178,11 @@ const MUTATIONS = [
   },
 ]
 
-const original = readFileSync(CLIENT, 'utf8')
+// `raw` is the file exactly as checked out and is what gets restored; the
+// patterns are authored in LF, so they are matched against `original`. See
+// scripts/source-text.mjs for why that distinction exists.
+const raw = readFileSync(CLIENT, 'utf8')
+const original = normalizeEol(raw)
 let survived = 0
 
 try {
@@ -215,7 +221,7 @@ try {
       output = String((err.stdout || '') + (err.stderr || ''))
     }
 
-    writeFileSync(CLIENT, original, 'utf8')
+    writeFileSync(CLIENT, raw, 'utf8')
 
     if (failed) {
       const lines = output.split('\n').filter((line) => /^\s*-\s/.test(line))
@@ -228,7 +234,7 @@ try {
     }
   }
 } finally {
-  writeFileSync(CLIENT, original, 'utf8')
+  writeFileSync(CLIENT, raw, 'utf8')
 }
 
 if (survived > 0) {

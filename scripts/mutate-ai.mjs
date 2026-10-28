@@ -23,6 +23,8 @@ import { readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { normalizeEol } from './source-text.mjs'
+
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(HERE, '..')
 const TARGET = join(ROOT, 'index.js')
@@ -174,7 +176,11 @@ const MUTATIONS = [
   },
 ]
 
-const original = readFileSync(TARGET, 'utf8')
+// `raw` is the on-disk text and what gets restored; `original` has CRLF
+// collapsed, because the patterns below are authored in LF. See
+// scripts/source-text.mjs.
+const raw = readFileSync(TARGET, 'utf8')
+const original = normalizeEol(raw)
 let survived = 0
 
 try {
@@ -206,7 +212,7 @@ try {
       output = String((err.stdout || '') + (err.stderr || ''))
     }
 
-    writeFileSync(TARGET, original, 'utf8')
+    writeFileSync(TARGET, raw, 'utf8')
 
     if (failed) {
       const lines = output.split('\n').filter((line) => line.trim().startsWith('- '))
@@ -219,7 +225,7 @@ try {
     }
   }
 } finally {
-  writeFileSync(TARGET, original, 'utf8')
+  writeFileSync(TARGET, raw, 'utf8')
   rmSync(join(ROOT, 'index.js.mutbak'), { force: true })
 }
 

@@ -49,6 +49,14 @@ jobs:
       - name: Show the runtime under test
         run: node --version
 
+      - name: Show the line endings git gave us
+        # `.gitattributes` pins `eol=lf`, and check-eol.mjs asserts it. Printing
+        # the answer makes a future red run diagnosable from the log alone,
+        # instead of requiring someone to reproduce it on a Windows box.
+        shell: bash
+        run: |
+          node -e "const fs=require('fs');const t=fs.readFileSync('index.js','utf8');console.log('index.js line endings:', t.includes('\r\n') ? 'CRLF' : 'LF')"
+
       - name: Install (no dependencies to install)
         run: npm install --ignore-scripts --no-audit --no-fund
 

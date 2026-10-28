@@ -47,7 +47,7 @@ import { dirname, join } from 'node:path'
 const API_PREFIX = '/api/dsh-modpack'
 const FORMAT = 'dsh-modpack'
 const FORMAT_VERSION = 1
-const PLUGIN_VERSION = '0.9.0'
+const PLUGIN_VERSION = '0.9.1'
 // Bumped only when the shape of a route's request/response changes in a way the
 // other half must know about. The client compares this against its own copy:
 // a browser that cached yesterday's `client.js` while the host half was

@@ -1,5 +1,7 @@
 ## What this changes
 
+<!-- One or two sentences. The diff already says *what*; say *why*. -->
+
 ## Checklist
 
 - [ ] `npm run check` passes
@@ -11,3 +13,8 @@
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for why each of those exists.
 
 ## If this is a workaround
+
+<!--
+Anything done to survive a particular Harness build belongs here: which
+version, what it does, and what would let it be removed later.
+-->

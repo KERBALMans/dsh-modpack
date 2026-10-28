@@ -10,7 +10,7 @@
 ## 开始之前：先看清楚要传哪些东西
 
 要上传的是桌面上 **`要上传到GitHub`** 这个文件夹里的东西
-（`E:\Administrator\桌面\dsh-modpack-v0.9.0\要上传到GitHub\`）。
+（`E:\Administrator\桌面\dsh-modpack-v0.9.1\要上传到GitHub\`）。
 
 打开它，你会看到 16 项（13 个文件 + 3 个文件夹）：
 
@@ -33,7 +33,7 @@
 | `scripts`（文件夹，24 个文件） | 自动测试脚本 | 可选 |
 | `.github`（文件夹，5 个文件） | 自动检查（CI）+ 提问模板 | 可选 |
 
-> **那三个文件夹传不上去也不影响发布。** 别人安装用的是 Release 里的 `dsh-modpack-0.9.0.tgz`，
+> **那三个文件夹传不上去也不影响发布。** 别人安装用的是 Release 里的 `dsh-modpack-0.9.1.tgz`，
 > 那个包里 `locale`、`scripts` 一个不少。文件夹只影响「仓库好不好看」和「自动测试跑不跑」。
 > 具体怎么把文件夹补上去，看第 3.3 节。
 
@@ -194,7 +194,7 @@
 #### 嫌 23 个太多？只补 `locale`，跳过 `scripts` 和 `.github`
 
 `scripts` 和 `.github` **只关系到自动测试（CI）和提问模板，跟「别人能不能搜到、能不能装上」一点关系都没有**
-——安装包 `dsh-modpack-0.9.0.tgz` 里这两样都齐了。
+——安装包 `dsh-modpack-0.9.1.tgz` 里这两样都齐了。
 
 所以最省事的完整做法是：**只做第 1 个洞（`locale/zh.json`）+ 第 6 项（拖 `en.json`）**，
 `scripts` 和 `.github` 全跳过。仓库少两个文件夹，功能一点不少。
@@ -352,13 +352,13 @@ Release 就是「这个版本的可下载文件」那一栏。别人不用下源
 安装包是用 `scripts/pack.mjs` 打出来的，产物在 `dist` 文件夹里：
 
 ```
-dist \ dsh-modpack-0.9.0.tgz
+dist \ dsh-modpack-0.9.1.tgz
 ```
 
 **就是这个文件，一会儿要拖到网页上。** 先记住它在哪。
 
-> 如果你拿到的是桌面上那个 `dsh-modpack-v0.9.0` 文件夹，
-> tgz 就在它的**根目录**里（`dsh-modpack-0.9.0.tgz`），直接用它。
+> 如果你拿到的是桌面上那个 `dsh-modpack-v0.9.1` 文件夹，
+> tgz 就在它的**根目录**里（`dsh-modpack-0.9.1.tgz`），直接用它。
 > 注意别拖错成 `要上传到GitHub` 里的东西——那里面是给仓库看的源码，不是安装包。
 
 ### 6.2 创建 Release
@@ -383,15 +383,15 @@ dist \ dsh-modpack-0.9.0.tgz
 3. 页面往下滚，找到写着
    **"Attach binaries by dropping them here or select them to upload"** 的虚线框
 
-4. 从资源管理器里把 `dsh-modpack-0.9.0.tgz` **拖进这个框**
+4. 从资源管理器里把 `dsh-modpack-0.9.1.tgz` **拖进这个框**
    （拖不进去就点框里的 **select them to upload**，在弹窗里选中它）
 
-5. 等它上传完——框里会出现一行 `dsh-modpack-0.9.0.tgz`，旁边有个小叉可以删
+5. 等它上传完——框里会出现一行 `dsh-modpack-0.9.1.tgz`，旁边有个小叉可以删
 
 6. 点页面最下面的绿色按钮 **Publish release**
 
 **成功的标志**：页面标题变成 `dsh-modpack v0.9.0`，
-下面有 **Assets** 区域，里面有一行 `dsh-modpack-0.9.0.tgz` 可以点下载。
+下面有 **Assets** 区域，里面有一行 `dsh-modpack-0.9.1.tgz` 可以点下载。
 
 ---
 

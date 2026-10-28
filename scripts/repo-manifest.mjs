@@ -59,6 +59,7 @@ export function shippedFiles(root, pkg) {
  * second workflow file does not require editing this list.
  */
 export const REPO_ONLY = [
+  '.gitattributes',
   '.gitignore',
   '.github',
   'CONTRIBUTING.md',

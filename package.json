@@ -1,6 +1,6 @@
 {
   "name": "dsh-modpack",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Modpack builder for DeepSeek Harness — pick any subset of your installed plugins, pack them into one portable .dshmodpack.json, and install that modpack into somebody else's Harness.",
   "keywords": [
     "dsh",
@@ -26,6 +26,7 @@
     "cordis.patch.yml",
     "locale/*.json",
     "icon.svg",
+    "scripts/source-text.mjs",
     "scripts/check-tools.mjs",
     "scripts/check-categories.mjs",
     "scripts/check-tree-logic.mjs",
@@ -40,6 +41,7 @@
     "scripts/check-profileroot.mjs",
     "scripts/check-layout.mjs",
     "scripts/check-future.mjs",
+    "scripts/check-eol.mjs",
     "scripts/mutate-remote.mjs",
     "scripts/mutate-online-ui.mjs",
     "scripts/mutate-ai.mjs",
@@ -47,6 +49,7 @@
     "scripts/mutate-metasource.mjs",
     "scripts/mutate-layout.mjs",
     "scripts/mutate-future.mjs",
+    "scripts/mutate-eol.mjs",
     "README.md",
     "CHANGELOG.md",
     "UPLOAD-GUIDE.md",
@@ -58,7 +61,7 @@
     "win32"
   ],
   "scripts": {
-    "check": "node --check index.js && node --check client.js && node scripts/check-tools.mjs && node scripts/check-categories.mjs && node scripts/check-tree-logic.mjs && node scripts/check-drag.mjs && node scripts/check-compat.mjs && node scripts/check-autocat.mjs && node scripts/check-remote.mjs && node scripts/check-signals.mjs && node scripts/check-online-ui.mjs && node scripts/check-ai.mjs && node scripts/check-metasource.mjs && node scripts/check-profileroot.mjs && node scripts/check-layout.mjs && node scripts/check-future.mjs",
+    "check": "node --check index.js && node --check client.js && node scripts/check-tools.mjs && node scripts/check-categories.mjs && node scripts/check-tree-logic.mjs && node scripts/check-drag.mjs && node scripts/check-compat.mjs && node scripts/check-autocat.mjs && node scripts/check-remote.mjs && node scripts/check-signals.mjs && node scripts/check-online-ui.mjs && node scripts/check-ai.mjs && node scripts/check-metasource.mjs && node scripts/check-profileroot.mjs && node scripts/check-layout.mjs && node scripts/check-future.mjs && node scripts/check-eol.mjs",
     "test": "npm run check",
     "publish:github": "node scripts/publish-github.mjs"
   },

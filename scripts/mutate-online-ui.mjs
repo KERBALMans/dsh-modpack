@@ -16,6 +16,8 @@ import { copyFileSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { normalizeEol } from './source-text.mjs'
+
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(HERE, '..')
 const TARGET = join(ROOT, 'client.js')
@@ -68,7 +70,10 @@ const MUTATIONS = [
 ]
 
 copyFileSync(TARGET, BACKUP)
-const original = readFileSync(TARGET, 'utf8')
+// Patterns are LF on every platform; `raw` is what goes back on disk. See
+// scripts/source-text.mjs.
+const raw = readFileSync(TARGET, 'utf8')
+const original = normalizeEol(raw)
 
 let survived = 0
 try {
@@ -98,7 +103,7 @@ try {
     }
 
     // Put the real file back before anything else can read it.
-    writeFileSync(TARGET, original, 'utf8')
+    writeFileSync(TARGET, raw, 'utf8')
 
     if (failed) {
       const lines = output.split('\n').filter((line) => line.trim().startsWith('- '))
@@ -111,7 +116,7 @@ try {
     }
   }
 } finally {
-  writeFileSync(TARGET, original, 'utf8')
+  writeFileSync(TARGET, raw, 'utf8')
   rmSync(BACKUP, { force: true })
 }
 

@@ -1,0 +1,21 @@
+# Line endings are part of the contract, not a local preference.
+#
+# The check scripts slice declarations out of `index.js` and `client.js` with
+# markers written as `\n...`, and several of them (and every `mutate-*` script)
+# match multi-line source text literally. Those patterns are authored in LF.
+# On a Windows checkout with `core.autocrlf=true` the working tree is CRLF, so
+# a pattern that spans a line break silently stops matching: the check reports
+# "no closing bracket in column 0", or the mutation runner reports
+# PATTERN-MISSING and scores a guard as unproven. That is exactly how the first
+# CI run went red on `windows-latest` while `ubuntu-latest` stayed green.
+#
+# `eol=lf` forces LF in the working tree on every platform, so what CI checks
+# out is what the patterns were written against.
+* text=auto eol=lf
+
+# Files that must never be line-ending converted at all.
+*.png binary
+*.jpg binary
+*.ico binary
+*.tgz binary
+*.zip binary

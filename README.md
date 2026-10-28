@@ -298,7 +298,7 @@ pnpm add link:/path/to/dsh-modpack
 ## 开发 / Development
 
 ```bash
-npm test                  # 全部检查：两侧语法 + 14 个测试套件
+npm test                  # 全部检查：两侧语法 + 15 个测试套件
 npm run check             # 同上（等价）
 node --check index.js     # 仅 Host 半边语法
 node --check client.js    # 仅客户端半边语法
@@ -322,8 +322,14 @@ node --check client.js    # 仅客户端半边语法
 | `scripts/mutate-layout.mjs` | 23 个变异，全部被捕获：把选中态换成加粗/字距、按钮换标签、标签栈退化成并排、隐藏元素移出文档流、分类树卡片退回整体滚动、面板挪回滚动区里、页脚退回换行行、按钮行不再换行、分类栏退回侧栏，以及 0.8.6 的八条：`overflow` 只剩 `hidden`（仍会建滚动容器）、`clip` 与 `hidden` 声明顺序颠倒、页脚丢掉 `sticky`、页脚钉在 `top` 而不是 `bottom`、对话框守住 800px、宽度规则丢掉 `html.mpk-wide` 作用域、`mpk-wide` 类加了不删、类不看引用计数就删。这一版还改了它自己：子检查的 stderr 改为捕获而不是继承 —— 继承会把每一次**预期内**的失败都打到终端上，看起来像整套跑崩了 |
 | `scripts/check-future.mjs` | 两个半边的版本握手与「页面壳换形状」：① 两侧 `API_VERSION` 必须相等，`/diag` 必须报出来；② 只有**明确报出不同数字**才算不匹配 —— 老宿主不报数字、探测失败、返回非数字，一律不匹配（否则老版本上会挂一条红条说「版本不合」而它其实工作正常）；③ 传输失败说清是「连不上宿主半边」、404 说清是「宿主半边太旧没有这个接口」、回的不是 JSON 说清是「不是 JSON」，三种都不许退化成 `Failed to fetch`；④ `window.__ModuleLoader__` 缺失或换了形状不许抛，正常时只调一次；⑤ 一个插槽键被改名只失去那个座位，另一个照常注册，且要出声说明丢了哪个；没有 `slots` 服务时不许从 `apply` 抛出去；⑥ 运行时没有 `ctx.inject` 时 Host 半边要退回直接读服务，`/diag` 仍要能答。读的是**真实源码**（切出函数求值、挂载真插件到合成 ctx），不是复述逻辑 |
 | `scripts/mutate-future.mjs` | 9 个变异，全部被捕获：客户端不再比对版本、不报数字也算不匹配、探测失败也算不匹配、传输错误丢掉「连不上后台插件」、404 退化成通用失败、一个座位注册失败就抛出整个 `apply`、两侧 `API_VERSION` 漂移、`/diag` 不再报 `apiVersion`、没有 `ctx.inject` 时当成没有 `webServer` |
+| `scripts/check-eol.mjs` | 同一份代码在 LF 与 CRLF 检出下必须表现一致。0.9.0 的 CI 在 Linux 全绿、在 Windows 全红，原因跟插件无关：`core.autocrlf=true`（Git for Windows 默认推荐）把工作树转成 CRLF，而所有检查脚本都用写成 `\n...` 的标记去切源码、所有变异脚本都用 LF 写成的多行字面量去匹配 —— 于是 `/\n[\]}]\n/` 永远匹配不到，`check-signals.mjs` 报出「`const AUTO_RULES = [` 在第 0 列没有闭合括号」，而那个括号明明在。两层各自独立：① `.gitattributes` 钉住 `eol=lf`（缺失或不是 `*` 通配都失败）；② 脚本读源码时自己归一化（`scripts/source-text.mjs`）—— 后者覆盖 ZIP 导出、Windows 上解包的 tarball、编辑器重写行尾这些 `.gitattributes` 管不到的情况。第二条不是文本搜索：它真的把整个插件复制一份、把所有源码转成 CRLF、把全部检查与变异脚本跑一遍，跑不绿就失败。配套 2 个变异全部被捕获（`scripts/mutate-eol.mjs` 可复跑），其中一个就是把归一化改成空操作 —— 那种情况 `.gitattributes` 还在，只有真跑才能抓住 |
+| `scripts/mutate-eol.mjs` | 2 个变异，全部被捕获：把 `.gitattributes` 改名挪走（模拟有人删掉根目录这个不认识的文件）、把 `normalizeEol` 改成直接返回原文（`check-signals.mjs` 会立刻报出与线上 CI 一字不差的失败） |
 
-变异工具（`scripts/mutate-*.mjs`，共 7 个、82 个变异，全部可复跑）：`mutate-remote.mjs`（8 个变异）、`mutate-compat.mjs`（2 个）、`mutate-online-ui.mjs`（7 个）、`mutate-ai.mjs`（18 个）、`mutate-metasource.mjs`（15 个）、`mutate-layout.mjs`（23 个）、`mutate-future.mjs`（9 个）。每个变异都先把源码改坏、跑对应测试、再按字节还原，只有测试真的失败才算「被捕获」。
+变异工具（`scripts/mutate-*.mjs`，共 8 个、84 个变异，全部可复跑）：`mutate-remote.mjs`（8 个变异）、`mutate-compat.mjs`（2 个）、`mutate-online-ui.mjs`（7 个）、`mutate-ai.mjs`（18 个）、`mutate-metasource.mjs`（15 个）、`mutate-layout.mjs`（23 个）、`mutate-future.mjs`（9 个）、`mutate-eol.mjs`（2 个）。每个变异都先把源码改坏、跑对应测试、再按字节还原，只有测试真的失败才算「被捕获」。
+
+### 行尾 / Line endings
+
+仓库用 `.gitattributes` 钉住 `eol=lf`。这不只是风格问题：检查脚本会按 `\n` 切源码，变异脚本按 LF 写多行模式，而 Git for Windows 的 `core.autocrlf=true` 会把工作树转成 CRLF，让这些匹配全部落空 —— 表现成「代码有 bug」，实际是检出环境不同。脚本读源码一律走 `scripts/source-text.mjs`，它在读入时归一化，所以 ZIP 导出、Windows 解包的 tarball 也一样能跑。`scripts/check-eol.mjs` 把这件事锁住。
 
 无构建步骤 —— `index.js` 与 `client.js` 都是手写的原生 ESM / 浏览器模块，直接可加载。
 
@@ -368,7 +374,7 @@ node scripts/pack.mjs
 产物有两个：`dist/dsh-modpack-<版本>.tgz`（npm 布局，只有 `files[]` 里列出的文件外加 npm 必带的 `package.json`）与 `dist/dsh-modpack-v<版本>.zip`（仓库布局，整份仓库，含 CI 与模板）。两者都由 `scripts/repo-manifest.mjs` 推导，不手写清单 —— 0.6.1 那次把一份临时诊断脚本打进包里，就是因为清单是手抄的。接收方可以直接：
 
 ```bash
-dsh plugin --profile desktop add ./dist/dsh-modpack-0.9.0.tgz
+dsh plugin --profile desktop add ./dist/dsh-modpack-0.9.1.tgz
 ```
 
 ## License

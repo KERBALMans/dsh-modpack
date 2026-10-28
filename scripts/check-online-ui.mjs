@@ -17,7 +17,7 @@
  *
  *   node scripts/check-online-ui.mjs
  */
-import { readFileSync } from 'node:fs'
+import { readSource } from './source-text.mjs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -29,7 +29,7 @@ function check(label, condition, detail) {
   if (!condition) problems.push(detail === undefined ? label : `${label} — ${JSON.stringify(detail)}`)
 }
 
-const source = readFileSync(CLIENT, 'utf8')
+const source = readSource(CLIENT)
 
 /* ---- extract the shipped component ------------------------------------ */
 

@@ -3,6 +3,29 @@
 All notable changes to `dsh-modpack` are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows [SemVer](https://semver.org/).
 
+## [0.9.1] — 2026-10-28
+
+### Fixed
+
+- **The suite failed on Windows CI while passing on Linux, for a reason that had nothing to do with the plugin.** The first push went red on both `windows-latest` jobs while both `ubuntu-latest` jobs stayed green — 2 successful, 2 failing, 1 skipped. The failure was `check-signals.mjs` reporting `const AUTO_RULES = [ has no closing bracket in column 0` for a file that plainly has one. Root cause: every check script slices declarations out of `index.js` and `client.js` with markers written as `\n...`, and every mutation script matches multi-line source text literally, but Git does not promise LF in the working tree. `core.autocrlf=true` — which Git for Windows suggests during install — converts on checkout, so the same commit produced LF on the Linux runners and CRLF on the Windows runners. `\r\n` still contains the `\n`, so the *opening* markers all matched; the *closing-bracket* scan `/\n[\]}]\n/` did not, because the character after `]` was `\r`. The mutation runners failed the same way but more quietly: their multi-line patterns matched zero times, which they score as `PATTERN-MISSING` and count as a surviving mutation, so seven real guards were reported as unproven. Reproduced locally by cloning with `-c core.autocrlf=true` (3703 CRLF pairs in `index.js`) and confirmed against the real runner: `check-signals.mjs` exited 1 with the identical message.
+- **Two independent layers, because either one alone leaves a hole.** `.gitattributes` now pins `* text=auto eol=lf`, which is what makes a fresh Windows clone correct — verified by cloning a staged copy with `-c core.autocrlf=true` and getting zero CRLF pairs. But that only covers what git produces: a ZIP export, a tarball unpacked on Windows, or an editor that rewrites line endings all bypass it. So the scripts also normalise on read, through the new `scripts/source-text.mjs` (`readSource` / `normalizeEol`). The mutation scripts keep both the raw on-disk text and the normalised text, and restore the *raw* one, so running them never rewrites a contributor's line endings.
+
+### Added
+
+- **`scripts/check-eol.mjs` — the suite must behave the same in a CRLF checkout.** Two assertions that fail for different reasons: that `.gitattributes` carries a `*`-prefixed `eol=lf` rule (a missing file is reported as a failed assertion, not as an `ENOENT` from the checker itself), and that the scripts still pass against a CRLF tree. The second is not a text search — it copies the plugin to a temp directory, converts `index.js`, `client.js` and every shipped script to CRLF, and runs `check-signals.mjs` plus a mutation runner there. `check-signals` is the one that failed first and `mutate-compat` fails differently (patterns matching zero times rather than an exception), so both shapes are covered.
+- **`scripts/mutate-eol.mjs` — two mutations, both caught.** Renaming `.gitattributes` away simulates a contributor deleting an unfamiliar file at the repository root; turning `normalizeEol` into a no-op is the subtler one, because the attributes file is still there and only the CRLF sandbox run catches it — it reproduces the production failure verbatim, `FAIL: const AUTO_RULES = [ has no closing bracket in column 0`.
+- **CI now prints which line endings the checkout received**, as a step before the suite runs, so a future red run on Windows is diagnosable from the log alone instead of requiring someone to reproduce it on a Windows box.
+
+### Changed
+
+- `scripts/repo-manifest.mjs` lists `.gitattributes` as repository-only, and `package.json#files` ships `scripts/source-text.mjs` because every check script imports it. The release now carries 35 files in the tarball and 48 in the repository zip.
+
+### Testing
+
+- 15 check suites and 8 mutation suites (84 mutations) pass locally on an LF tree.
+- The same suites were run in a real `core.autocrlf=true` clone of the repository: **before** the fix, `check-signals.mjs` failed with the CI message and five of seven mutation runners failed; **after**, 0 check failures and 0 mutation failures.
+- Also run in a CRLF tree with `.gitattributes` deliberately deleted, to prove the normalisation layer works on its own: 0 code-check failures and 0 mutation failures. The only failure there is `check-eol.mjs` itself, correctly reporting the missing attributes file.
+
 ## [0.9.0] — 2026-10-28
 
 ### Added
@@ -30,7 +53,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); version
 
 ### Testing
 
-- 14 check suites and 7 mutation suites (82 mutations) pass. The new pair is described above; `check-compat.mjs` still covers the host half's six synthetic `pluginManager` shapes and five model-service shapes, and `check-layout.mjs` still holds the line on the 0.8.5–0.8.6 layout invariants.
+- 14 check suites and 7 mutation suites (82 mutations) pass. The new pair is described above; `check-compat.mjs` still covers the host half's six synthetic `pluginManager` shapes and five model-service shapes, and `check-layout.mjs` still holds the line on the 0.8.5–0.8.6 layout invariants. *(Superseded by 0.9.1, which adds `check-eol.mjs` and `mutate-eol.mjs` after the Windows CI failure.)*
 - Verified against the live desktop host: `/diag` reports `apiVersion: 2` and `pluginVersion: 0.9.0`, and the panel loads with the widened dialog and sticky footer from 0.8.6 intact.
 - Verified the shipped artifact, not just the source tree: the built tarball was installed into a clean profile with `dsh plugin add`, and the host half was then imported **out of that profile's `node_modules`** and asked for `/diag` — it answered `pluginVersion 0.9.0`, `apiVersion 2`, with zero runtime dependencies. A package that installs cleanly and then does nothing is the failure this catches.
 

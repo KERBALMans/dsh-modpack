@@ -12,7 +12,7 @@
  *
  *   node scripts/check-tree-logic.mjs
  */
-import { readFileSync } from 'node:fs'
+import { readSource } from './source-text.mjs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -33,7 +33,7 @@ function check(label, condition, detail) {
   if (!condition) problems.push(detail === undefined ? label : `${label} — ${JSON.stringify(detail)}`)
 }
 
-const source = readFileSync(CLIENT, 'utf8')
+const source = readSource(CLIENT)
 const start = source.indexOf('    function childrenOf(doc, parentId) {')
 const end = source.indexOf('    function CategoryTree(')
 if (start < 0 || end < 0 || end <= start) {

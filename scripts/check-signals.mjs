@@ -13,7 +13,7 @@
  *
  *   node scripts/check-signals.mjs
  */
-import { readFileSync } from 'node:fs'
+import { readSource } from './source-text.mjs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -25,7 +25,9 @@ function check(label, condition, detail) {
   if (!condition) problems.push(detail === undefined ? label : `${label} — ${JSON.stringify(detail)}`)
 }
 
-const source = readFileSync(SOURCE, 'utf8')
+// Line endings matter here, so they are normalised on read — see
+// scripts/source-text.mjs for why a Windows checkout would otherwise fail.
+const source = readSource(SOURCE)
 
 /* Slice the shipped rule table and signal table out of index.js. */
 function slice(fromMarker, toMarker) {
@@ -194,7 +196,7 @@ for (const [name, description, expected] of REAL) {
   // name guess. Both are invisible in a single file, which is why the assertion
   // is a cross-file one: the vocabulary is read out of the host and looked for
   // in the client, rather than being written down twice.
-  const clientSource = readFileSync(join(HERE, '..', 'client.js'), 'utf8')
+  const clientSource = readSource(join(HERE, '..', 'client.js'))
 
   // The vocabulary the panel reports — read from the counters themselves, so it
   // is whatever the host actually counts rather than a list kept in step by hand.
