@@ -9,8 +9,8 @@
 
 ## 开始之前：先看清楚要传哪些东西
 
-要上传的是桌面上 **`要上传到GitHub`** 这个文件夹里的东西
-（`E:\Administrator\桌面\dsh-modpack-v0.9.1\要上传到GitHub\`）。
+要上传的是 **`要上传到GitHub`** 这个文件夹里的东西
+（`E:\MY Base Text\DeepSeek Harness\Deepseek Harness插件整合包插件\发布包-v0.9.1\要上传到GitHub\`）。
 
 打开它，你会看到 17 项（14 个文件 + 3 个文件夹）：
 
