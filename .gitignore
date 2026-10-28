@@ -1,0 +1,27 @@
+# Dependencies (the plugin ships with none)
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Local modpacks — these are user data, never source
+*.dshmodpack.json
+storages/
+
+# Build output — the release attaches the tarball; git does not track it
+dist/
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.tmp
+
+# Working files used while developing this plugin: old versions, probe
+# scripts, captured API responses. They are useful on the author's machine
+# and meaningless to anyone else, so they stay out of the repository.
+_v0*/
+_dump.txt
+scripts/_*
