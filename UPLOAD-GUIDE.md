@@ -266,7 +266,7 @@ GitHub Desktop 会拿**文件夹名**当仓库名的默认值。`要上传到Git
 
 1. 左边 **Changes** 上方数字应该是 **44**；子目录文件显示成 `locale/zh.json`、`scripts/pack.mjs` 这种带 `/` 的形式
 2. **每个文件前面的勾选框都要是勾上的**；点一下 `README.md`，右边中文应该不乱码
-3. 左下 **Summary (required)** 框里打 `Add dsh-modpack 0.9.0` → 点蓝色 **Commit to main**
+3. 左下 **Summary (required)** 框里打 `Add dsh-modpack 0.9.1` → 点蓝色 **Commit to main**
    （**Summary 不填，Commit 按钮就是灰的**）
 
 > ⚠️ 如果列表里出现 `安装说明.md`、`.tgz`、`.zip` 之类，说明选错文件夹了：
@@ -372,9 +372,9 @@ dist \ dsh-modpack-0.9.1.tgz
 
    | 页面上的框 | 填什么 |
    | --- | --- |
-   | **Choose a tag** | 输入 `v0.9.0`，然后点下面弹出的 **Create new tag: v0.9.0 on publish** |
+   | **Choose a tag** | 输入 `v0.9.1`，然后点下面弹出的 **Create new tag: v0.9.1 on publish** |
    | **Target** | 保持默认（一般是 `main`） |
-   | **Release title** | `dsh-modpack v0.9.0` |
+   | **Release title** | `dsh-modpack v0.9.1` |
    | **Describe this release** | 去 `GITHUB-COPY.md` 复制第 ⑤ 块整段粘进来（长版）；嫌长就用第 ⑥ 块（短版） |
 
    > 两版都写好了，**直接整段复制粘贴**，不用自己写。
@@ -390,7 +390,7 @@ dist \ dsh-modpack-0.9.1.tgz
 
 6. 点页面最下面的绿色按钮 **Publish release**
 
-**成功的标志**：页面标题变成 `dsh-modpack v0.9.0`，
+**成功的标志**：页面标题变成 `dsh-modpack v0.9.1`，
 下面有 **Assets** 区域，里面有一行 `dsh-modpack-0.9.1.tgz` 可以点下载。
 
 ---
@@ -403,7 +403,7 @@ dist \ dsh-modpack-0.9.1.tgz
    `https://github.com/你的用户名/dsh-modpack`
    —— 用无痕是为了确认「没登录的人也能看见」。
 2. 页面应该显示 README 的内容：标题 `dsh-modpack`、一段中英双语的介绍、功能列表。
-3. 点右边的 **Releases**，应该能看到 `dsh-modpack v0.9.0`，点进去能下载 tgz。
+3. 点右边的 **Releases**，应该能看到 `dsh-modpack v0.9.1`，点进去能下载 tgz。
 
 **三项都正常 = 发布成功。**
 
@@ -521,7 +521,7 @@ dist \ dsh-modpack-0.9.1.tgz
 | 3c | 各文件夹页面 | Add file → Upload files → 把该文件夹剩下的**文件**拖进去 → Commit changes（3 次） |
 | **或走 3.4** | GitHub Desktop | 文件夹改名 `dsh-modpack` → 装客户端 → Sign in to GitHub.com → Add local repository → 蓝字 create a repository（README/Git ignore/License 全不勾）→ 核对 44 → Summary → Commit to main → **Publish repository**（取消勾 Keep this code private、Organization 选 None） |
 | 5 | 仓库首页 About 旁 ⚙️ | Topics 加 `dsh-plugin` 回车 → Save changes |
-| 6 | /releases/new | tag `v0.9.0` → 标题 → 粘贴文案 → 拖入 tgz → Publish release |
+| 6 | /releases/new | tag `v0.9.1` → 标题 → 粘贴文案 → 拖入 tgz → Publish release |
 | 7 | 无痕窗口打开仓库 | 确认 README 显示、Release 能下载 |
 
 ---
