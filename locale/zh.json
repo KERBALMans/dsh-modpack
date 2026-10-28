@@ -1,0 +1,5 @@
+{
+  "meta.title": "插件整合包",
+  "meta.description": "像做整合包一样管理插件：筛选、勾选任意插件，打包成一个可分享的 .dshmodpack.json，换台电脑一键装回去。",
+  "tab.label": "插件整合包"
+}
