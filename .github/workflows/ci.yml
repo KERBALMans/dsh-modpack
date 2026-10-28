@@ -1,0 +1,109 @@
+name: CI
+
+# What this workflow is for
+# -------------------------
+# Every claim in this repository is checked by a script, and the scripts are
+# the reason the plugin can be installed into someone else's Harness without
+# a manual walkthrough. CI is what makes "it passes" mean something on a
+# machine other than the author's.
+#
+# It deliberately does NOT test against a running Harness: the plugin's whole
+# design goal is to degrade gracefully when the surrounding runtime is shaped
+# differently, so the tests mount it against synthetic runtimes instead. That
+# keeps CI hermetic (no secrets, no desktop app, no network) and still covers
+# the compatibility claims.
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # The floor is the `engines.node` in package.json. The ceiling is the
+        # current LTS plus the odd-numbered line, so a syntax feature that is
+        # newer than the floor shows up here rather than in a user's install.
+        node: ['20', '22']
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Show the runtime under test
+        run: node --version
+
+      - name: Install (no dependencies to install)
+        run: npm install --ignore-scripts --no-audit --no-fund
+
+      - name: Syntax check both halves
+        run: |
+          node --check index.js
+          node --check client.js
+
+      - name: Run every check script
+        run: npm run check
+
+      - name: Prove the checks can fail
+        # Each mutate-* script breaks a guard on purpose, runs the matching
+        # check, and fails if the check still passes. A green suite that cannot
+        # go red is not evidence of anything.
+        shell: bash
+        run: |
+          set -e
+          for script in scripts/mutate-*.mjs; do
+            echo "::group::$script"
+            node "$script"
+            echo "::endgroup::"
+          done
+
+  package:
+    name: build the tarball
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build the release artifacts
+        run: node scripts/pack.mjs
+
+      - name: Check that the tarball contains what package.json promises
+        shell: bash
+        run: |
+          set -e
+          TGZ=$(ls dist/*.tgz 2>/dev/null || ls *.tgz)
+          echo "tarball: $TGZ"
+          tar -tzf "$TGZ" | sort
+          # A release that ships a plugin missing its entry point installs
+          # cleanly and then does nothing — the worst possible failure.
+          tar -tzf "$TGZ" | grep -q 'package/index.js'
+          tar -tzf "$TGZ" | grep -q 'package/client.js'
+          tar -tzf "$TGZ" | grep -q 'package/cordis.patch.yml'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dsh-modpack-tarball
+          path: |
+            dist/*.tgz
+            dist/*.zip
+          if-no-files-found: error
+          retention-days: 14
