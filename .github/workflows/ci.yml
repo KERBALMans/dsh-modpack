@@ -95,17 +95,13 @@ jobs:
         run: node scripts/pack.mjs
 
       - name: Check that the tarball contains what package.json promises
-        shell: bash
-        run: |
-          set -e
-          TGZ=$(ls dist/*.tgz 2>/dev/null || ls *.tgz)
-          echo "tarball: $TGZ"
-          tar -tzf "$TGZ" | sort
-          # A release that ships a plugin missing its entry point installs
-          # cleanly and then does nothing — the worst possible failure.
-          tar -tzf "$TGZ" | grep -q 'package/index.js'
-          tar -tzf "$TGZ" | grep -q 'package/client.js'
-          tar -tzf "$TGZ" | grep -q 'package/cordis.patch.yml'
+        # This used to be a shell one-liner: `tar -tzf "$TGZ" | grep -q ...`.
+        # GitHub's `shell: bash` runs with `-o pipefail`, `grep -q` exits the
+        # moment it matches, `tar` then dies of EPIPE with status 2, and the step
+        # failed while every assertion in it had actually passed. It is a Node
+        # script now, because there is no pipeline to break and the same code
+        # runs on every platform in the matrix.
+        run: node scripts/check-tarball.mjs
 
       - uses: actions/upload-artifact@v4
         with:

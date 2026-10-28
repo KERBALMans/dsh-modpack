@@ -298,7 +298,7 @@ pnpm add link:/path/to/dsh-modpack
 ## 开发 / Development
 
 ```bash
-npm test                  # 全部检查：两侧语法 + 15 个测试套件
+npm test                  # 全部检查：两侧语法 + 16 个测试套件
 npm run check             # 同上（等价）
 node --check index.js     # 仅 Host 半边语法
 node --check client.js    # 仅客户端半边语法
@@ -324,6 +324,7 @@ node --check client.js    # 仅客户端半边语法
 | `scripts/mutate-future.mjs` | 9 个变异，全部被捕获：客户端不再比对版本、不报数字也算不匹配、探测失败也算不匹配、传输错误丢掉「连不上后台插件」、404 退化成通用失败、一个座位注册失败就抛出整个 `apply`、两侧 `API_VERSION` 漂移、`/diag` 不再报 `apiVersion`、没有 `ctx.inject` 时当成没有 `webServer` |
 | `scripts/check-eol.mjs` | 同一份代码在 LF 与 CRLF 检出下必须表现一致。0.9.0 的 CI 在 Linux 全绿、在 Windows 全红，原因跟插件无关：`core.autocrlf=true`（Git for Windows 默认推荐）把工作树转成 CRLF，而所有检查脚本都用写成 `\n...` 的标记去切源码、所有变异脚本都用 LF 写成的多行字面量去匹配 —— 于是 `/\n[\]}]\n/` 永远匹配不到，`check-signals.mjs` 报出「`const AUTO_RULES = [` 在第 0 列没有闭合括号」，而那个括号明明在。两层各自独立：① `.gitattributes` 钉住 `eol=lf`（缺失或不是 `*` 通配都失败）；② 脚本读源码时自己归一化（`scripts/source-text.mjs`）—— 后者覆盖 ZIP 导出、Windows 上解包的 tarball、编辑器重写行尾这些 `.gitattributes` 管不到的情况。第二条不是文本搜索：它真的把整个插件复制一份、把所有源码转成 CRLF、把全部检查与变异脚本跑一遍，跑不绿就失败。配套 2 个变异全部被捕获（`scripts/mutate-eol.mjs` 可复跑），其中一个就是把归一化改成空操作 —— 那种情况 `.gitattributes` 还在，只有真跑才能抓住 |
 | `scripts/mutate-eol.mjs` | 2 个变异，全部被捕获：把 `.gitattributes` 改名挪走（模拟有人删掉根目录这个不认识的文件）、把 `normalizeEol` 改成直接返回原文（`check-signals.mjs` 会立刻报出与线上 CI 一字不差的失败） |
+| `scripts/check-tarball.mjs` | 打出来的 tgz 里必须真的有入口文件。这条原来是一行 shell：`tar -tzf "$TGZ" \| grep -q 'package/index.js'`，结果在 CI 上以 exit 2 失败，而它检查的每一条其实都通过了 —— GitHub 的 `shell: bash` 带 `-o pipefail`，`grep -q` 一匹配就退出，管道读端关闭，`tar` 死于 `EPIPE` 并报 2。同一个写法还有第二个更安静的问题：`TGZ=$(ls dist/*.tgz 2>/dev/null \|\| ls *.tgz)` 在两个 glob 都不匹配时得到空串，`tar -tzf ""` 同样报 2，于是「tarball 不存在」和「管道断了」在日志里长得一模一样。现在用 Node 写，`execFileSync` 把整个清单读进内存，没有管道可断，顺带让同一个检查在矩阵的每个平台都跑。它断言三个入口文件 + `package.json#files` 里每一条字面条目 + 隐式的 `package.json`，并且验证过会红：拿掉 `client.js` 的诱饵 tarball 会输出 `FAIL: missing from the tarball: package/client.js` 并 exit 1 |
 
 变异工具（`scripts/mutate-*.mjs`，共 8 个、84 个变异，全部可复跑）：`mutate-remote.mjs`（8 个变异）、`mutate-compat.mjs`（2 个）、`mutate-online-ui.mjs`（7 个）、`mutate-ai.mjs`（18 个）、`mutate-metasource.mjs`（15 个）、`mutate-layout.mjs`（23 个）、`mutate-future.mjs`（9 个）、`mutate-eol.mjs`（2 个）。每个变异都先把源码改坏、跑对应测试、再按字节还原，只有测试真的失败才算「被捕获」。
 

@@ -66,6 +66,7 @@ export const REPO_ONLY = [
   'SECURITY.md',
   'GITHUB-COPY.md',
   'scripts/pack.mjs',
+  'scripts/check-tarball.mjs',
   'scripts/publish-github.mjs',
   'scripts/repo-manifest.mjs',
 ]

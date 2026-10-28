@@ -15,16 +15,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); version
 - **`scripts/check-eol.mjs` — the suite must behave the same in a CRLF checkout.** Two assertions that fail for different reasons: that `.gitattributes` carries a `*`-prefixed `eol=lf` rule (a missing file is reported as a failed assertion, not as an `ENOENT` from the checker itself), and that the scripts still pass against a CRLF tree. The second is not a text search — it copies the plugin to a temp directory, converts `index.js`, `client.js` and every shipped script to CRLF, and runs `check-signals.mjs` plus a mutation runner there. `check-signals` is the one that failed first and `mutate-compat` fails differently (patterns matching zero times rather than an exception), so both shapes are covered.
 - **`scripts/mutate-eol.mjs` — two mutations, both caught.** Renaming `.gitattributes` away simulates a contributor deleting an unfamiliar file at the repository root; turning `normalizeEol` into a no-op is the subtler one, because the attributes file is still there and only the CRLF sandbox run catches it — it reproduces the production failure verbatim, `FAIL: const AUTO_RULES = [ has no closing bracket in column 0`.
 - **CI now prints which line endings the checkout received**, as a step before the suite runs, so a future red run on Windows is diagnosable from the log alone instead of requiring someone to reproduce it on a Windows box.
+- **`scripts/check-tarball.mjs` — the artifact assertion is a Node script now.** It replaced a shell one-liner, `tar -tzf "$TGZ" | grep -q 'package/index.js'`, which failed on CI with exit 2 while every assertion in it had actually passed. `shell: bash` on GitHub runs with `-o pipefail`; `grep -q` exits the moment it matches, which closes the read end of the pipe, and `tar` then dies of `EPIPE` with status 2. The old line also had a second, quieter problem: `TGZ=$(ls dist/*.tgz 2>/dev/null || ls *.tgz)` yields an empty string when neither glob matches, and `tar -tzf ""` also exits 2, so "the tarball is missing" and "the pipeline was broken" looked identical in the log. `execFileSync` buffers the listing and has no pipeline to break; running it in Node also means the same check runs on every platform in the matrix. It asserts the three entry points plus every literal entry in `package.json#files` and the implicit `package.json`, and it is verified to fail: a decoy tarball built without `client.js` reports `FAIL: missing from the tarball: package/client.js` and exits 1.
 
 ### Changed
 
-- `scripts/repo-manifest.mjs` lists `.gitattributes` as repository-only, and `package.json#files` ships `scripts/source-text.mjs` because every check script imports it. The release now carries 35 files in the tarball and 48 in the repository zip.
+- `scripts/repo-manifest.mjs` lists `.gitattributes` as repository-only, and `package.json#files` ships `scripts/source-text.mjs` because every check script imports it. The release now carries 35 files in the tarball and 49 in the repository zip.
 
 ### Testing
 
 - 15 check suites and 8 mutation suites (84 mutations) pass locally on an LF tree.
 - The same suites were run in a real `core.autocrlf=true` clone of the repository: **before** the fix, `check-signals.mjs` failed with the CI message and five of seven mutation runners failed; **after**, 0 check failures and 0 mutation failures.
 - Also run in a CRLF tree with `.gitattributes` deliberately deleted, to prove the normalisation layer works on its own: 0 code-check failures and 0 mutation failures. The only failure there is `check-eol.mjs` itself, correctly reporting the missing attributes file.
+- The packaged artifact is checked twice on every platform: `pack.mjs` compares the tarball and zip against the manifests, and `check-tarball.mjs` asserts the entry points are present. The second is proven able to fail by building a tarball without `client.js` and watching it exit 1.
 
 ## [0.9.0] — 2026-10-28
 
