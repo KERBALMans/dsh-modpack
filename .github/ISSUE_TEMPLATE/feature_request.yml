@@ -1,0 +1,62 @@
+name: Feature request
+description: Suggest something dsh-modpack should do
+title: '[idea] '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you write: a short note on what this plugin is trying not to be.
+
+        It is a *packer*, not a package manager. It does not resolve
+        dependencies, host a registry, or replace `pluginManager` — it hands a
+        list of packages to the host's own installer and lets that decide what
+        an install means. Ideas that keep it in that lane are much easier to
+        say yes to.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: |
+        Describe the situation, not the solution. "I have 60 plugins and cannot
+        find the three I use for translation" is more useful than "add a
+        favourites tab" — the second is one answer to the first, and probably
+        not the best one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you have in mind
+      description: Optional. If you have an idea for how it should work, say it.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part
+      options:
+        - Packing a modpack
+        - Installing a modpack
+        - The category tree
+        - Automatic classification
+        - The AI classification step
+        - The panel layout
+        - Documentation
+        - Something else
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints you accept
+      description: These are non-negotiable for this project.
+      options:
+        - label: It needs no new runtime dependency
+          required: false
+        - label: It works without the AI or online steps (both stay optional)
+          required: false
