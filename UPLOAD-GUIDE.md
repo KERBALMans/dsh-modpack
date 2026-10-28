@@ -1,7 +1,7 @@
 # 上传到 GitHub —— 全程点鼠标，不敲一行命令
 
 > 这份教程**不需要打开命令行、不需要输入任何代码**。所有操作都在浏览器里点鼠标完成。
-> 传 12 个主文件大约 10 分钟（`.gitignore` 单独新建，见 3.2.1）；把三个文件夹也补齐再加二十来分钟（用 GitHub Desktop 则几分钟）。
+> 传 12 个主文件大约 10 分钟（`.gitignore` 与 `.gitattributes` 两个点开头的文件单独新建，见 3.2.1）；把三个文件夹也补齐再加二十来分钟（用 GitHub Desktop 则几分钟）。
 >
 > 你只需要：一个 GitHub 账号（免费）、这台电脑、一个浏览器（推荐 **Edge 或 Chrome**）。
 
@@ -12,7 +12,7 @@
 要上传的是桌面上 **`要上传到GitHub`** 这个文件夹里的东西
 （`E:\Administrator\桌面\dsh-modpack-v0.9.1\要上传到GitHub\`）。
 
-打开它，你会看到 16 项（13 个文件 + 3 个文件夹）：
+打开它，你会看到 17 项（14 个文件 + 3 个文件夹）：
 
 | 名字 | 是什么 | 必须传吗 |
 | --- | --- | --- |
@@ -24,13 +24,14 @@
 | `LICENSE` | 授权协议 | ✅ 必须 |
 | `README.md` | 别人打开仓库看到的第一页 | ✅ 必须 |
 | `.gitignore` | 防止以后误传垃圾文件（**点开头，不能拖，见 3.2.1**） | ✅ 必须 |
+| `.gitattributes` | 钉住 LF 行尾，否则 Windows 上跑测试会全红（**点开头，不能拖，见 3.2.1**） | ✅ 必须 |
 | `CHANGELOG.md` | 每个版本改了什么 | 建议 |
 | `UPLOAD-GUIDE.md` | 就是这份教程 | 建议 |
 | `GITHUB-COPY.md` | 现成的介绍文案 | 建议 |
 | `CONTRIBUTING.md` | 别人想改代码时看的规矩 | 建议 |
 | `SECURITY.md` | 安全说明 | 建议 |
 | `locale`（文件夹，2 个文件） | 界面标题的中英文案 | 建议 |
-| `scripts`（文件夹，24 个文件） | 自动测试脚本 | 可选 |
+| `scripts`（文件夹，28 个文件） | 自动测试脚本 | 可选 |
 | `.github`（文件夹，5 个文件） | 自动检查（CI）+ 提问模板 | 可选 |
 
 > **那三个文件夹传不上去也不影响发布。** 别人安装用的是 Release 里的 `dsh-modpack-0.9.1.tgz`，
@@ -40,7 +41,7 @@
 > ⚠️ **只传这个文件夹里的东西。** 不要传 `dist`（打包产物放 Release）、
 > 不要传 `node_modules`、更不要传整个 DeepSeek Harness 目录或你的 `.dsh` 配置目录。
 
-> 💡 **看不到 `.gitignore` 和 `.github`？** 它们名字以点开头，Windows 默认藏起来。
+> 💡 **看不到 `.gitignore`、`.gitattributes` 和 `.github`？** 它们名字以点开头，Windows 默认藏起来。
 > 在文件夹窗口顶部点 **「查看」** 选项卡 → 勾上 **「隐藏的项目」**，就出来了。
 
 ---
@@ -100,7 +101,7 @@
 > Firefox 常常完全没反应；一次同时拖多个文件夹，往往只吃第一个；
 > 仓库还是空的时候，页面上压根没有能接收拖拽的虚线框。
 >
-> 所以这一步改成**两段做**：先用「新建文件」把 `.gitignore` 单独建出来，
+> 所以这一步改成**两段做**：先用「新建文件」把 `.gitignore` 和 `.gitattributes` 两个点开头的文件单独建出来，
 > 再拖 12 个普通文件（一定能成），最后用「新建文件挖洞 + 进洞拖文件」的办法补三个文件夹。
 
 ### 3.1 打开上传页面
@@ -116,23 +117,34 @@
 > 🚫 **页面上没有 Add file 按钮？** 说明仓库是空的（第 2 步三个勾都没勾）。
 > 页面中间那段灰字里有个蓝色链接 **uploading an existing file**，点它就能进到带虚线框的上传页。
 
-### 3.2 先建 `.gitignore`，再拖 12 个普通文件
+### 3.2 先建两个点开头的文件，再拖 12 个普通文件
 
-#### 3.2.1 `.gitignore` 单独建（点开头的文件拖不上去）
+#### 3.2.1 `.gitignore` 和 `.gitattributes` 单独建（点开头的文件拖不上去）
 
-`.gitignore` 名字以点开头，浏览器拖拽时经常被过滤掉，或者开头的点被吃掉变成 `gitignore`（规则就失效了）。所以它不拖，直接新建：
+这两个文件的名字都以点开头，浏览器拖拽时经常被过滤掉，或者开头的点被吃掉变成 `gitignore` / `gitattributes`（规则就失效了）。所以它们不拖，直接新建。**两个都要建，做法一样。**
+
+**第一个：`.gitignore`**
 
 1. 仓库首页 → **Add file** → **Create new file**
 2. 名字框里原样打 `.gitignore`（9 个字符，不要加 `.txt`）
 3. 大框里粘贴内容（资源管理器 → `要上传到GitHub` → `.gitignore` → 右键 **打开方式** → **记事本** → `Ctrl+A` → `Ctrl+C` → 回浏览器 `Ctrl+V`）
 4. 点 **Commit changes** → 弹窗再点一次 **Commit changes**
 
+**第二个：`.gitattributes`**
+
+1. 还是 **Add file** → **Create new file**
+2. 名字框里原样打 `.gitattributes`（14 个字符，开头有点）
+3. 内容从 `要上传到GitHub\.gitattributes` 复制粘贴（同样用记事本打开）
+4. **Commit changes** → 再点一次
+
 > 如果列表里出现的是 `gitignore`（没有点），点开它 → 右上角垃圾桶 → **Commit changes** 删掉，重做这一步。
+>
+> **`.gitattributes` 为什么必须传？** 它告诉 Git「这个仓库一律用 LF 行尾」。少了它，别人在 Windows 上 clone 下来会变成 CRLF，`scripts` 里的检查脚本会全部失败、CI 会全红。它不是可选项。
 
 #### 3.2.2 再拖剩下 12 个普通文件
 
 1. 打开另一个窗口（按 `Win + E` 打开资源管理器），进到 `要上传到GitHub` 文件夹
-2. **只选那 12 个文件**（跳过 `.gitignore` 和三个文件夹；按住 `Ctrl` 一个个点，或者按名称排序后用 `Shift` 连选）
+2. **只选那 12 个文件**（跳过两个点开头的和三个文件夹；按住 `Ctrl` 一个个点，或者按名称排序后用 `Shift` 连选）
 3. 拖到虚线方框里，松手
 4. 滚到页面最下面，**Commit changes** 那一栏里两个框都不用改，直接点绿色 **Commit changes**
 
@@ -294,7 +306,7 @@ GitHub Desktop 会拿**文件夹名**当仓库名的默认值。`要上传到Git
 
 #### 第 6 小步：验收
 
-点 **View on GitHub**，浏览器里核对：13 个文件 + 3 个文件夹（`.github`/`locale`/`scripts` 是文件夹图标）、
+点 **View on GitHub**，浏览器里核对：14 个文件 + 3 个文件夹（`.github`/`locale`/`scripts` 是文件夹图标）、
 README 正常显示、名字旁边写着 **Public**。
 
 然后接着做第 5 步（打标签）和第 6 步（发 Release）。
@@ -313,11 +325,11 @@ README 正常显示、名字旁边写着 **Public**。
 
 仓库首页应该有：
 
-- **13 个文件**：`.gitignore`、`CHANGELOG.md`、`client.js`、`CONTRIBUTING.md`、`cordis.patch.yml`、
+- **14 个文件**：`.gitattributes`、`.gitignore`、`CHANGELOG.md`、`client.js`、`CONTRIBUTING.md`、`cordis.patch.yml`、
   `GITHUB-COPY.md`、`icon.svg`、`index.js`、`LICENSE`、`package.json`、`README.md`、`SECURITY.md`、`UPLOAD-GUIDE.md`
-- **3 个文件夹**（前面是文件夹图标，不是文件图标）：`locale`（2 个文件）、`scripts`（24 个）、`.github`（5 个）
+- **3 个文件夹**（前面是文件夹图标，不是文件图标）：`locale`（2 个文件）、`scripts`（28 个）、`.github`（5 个）
 
-少了文件夹不影响发布；少了 13 个文件里的任何一个都要回去补（`.gitignore` 如果显示成 `gitignore`，说明点被吃了，删掉按 3.2.1 重建）。
+少了文件夹不影响发布；少了 14 个文件里的任何一个都要回去补（`.gitignore` / `.gitattributes` 如果显示成没有点的名字，说明点被吃了，删掉按 3.2.1 重建）。
 
 ---
 
@@ -413,11 +425,11 @@ dist \ dsh-modpack-0.9.1.tgz
 
 ## 常见问题
 
-### 0. `.gitignore` 拖不上去，或者传上去变成了 `gitignore`
+### 0. `.gitignore` / `.gitattributes` 拖不上去，或者传上去变成了没有点的名字
 
-点开头的文件在浏览器拖拽里经常被过滤掉，或者开头的点被吃掉 —— 变成 `gitignore` 就完全不起作用了。
+点开头的文件在浏览器拖拽里经常被过滤掉，或者开头的点被吃掉 —— 变成 `gitignore` / `gitattributes` 就完全不起作用了（前者会让垃圾文件混进仓库，后者会让 Windows 上的测试全红）。
 
-解决：不要拖，用 **Add file → Create new file**，名字框里原样打 `.gitignore`，内容从本地 `要上传到GitHub\.gitignore` 复制粘贴，Commit changes。详见 **3.2.1**。
+解决：不要拖，用 **Add file → Create new file**，名字框里原样打 `.gitignore` 或 `.gitattributes`，内容从本地 `要上传到GitHub` 里同名文件复制粘贴，Commit changes。详见 **3.2.1**。
 已经误传成 `gitignore` 的：点开它 → 右上角垃圾桶 → Commit changes 删掉，再按 3.2.1 重建。
 
 ### 1. 拖文件的时候浏览器把文件打开了，没有上传
