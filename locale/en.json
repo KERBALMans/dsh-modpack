@@ -1,0 +1,5 @@
+{
+  "meta.title": "Plugin Modpacks",
+  "meta.description": "Manage plugins like Minecraft modpacks: filter, check any subset, and pack them into a shareable .dshmodpack.json that installs on another machine in one step.",
+  "tab.label": "Plugin Modpacks"
+}
