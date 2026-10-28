@@ -1,0 +1,85 @@
+name: Bug report
+description: Something in dsh-modpack did not do what it said it would
+title: '[bug] '
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Two of the fields below carry most of the weight:
+        the exact version and the browser console line. Without them a layout
+        bug is guesswork, because this plugin's UI is rendered by whatever
+        Harness build you happen to be running.
+
+  - type: input
+    id: plugin-version
+    attributes:
+      label: dsh-modpack version
+      description: |
+        Settings → dsh-modpack → the version at the top of the panel, or the
+        `version` in the folder's `package.json`.
+      placeholder: '0.9.0'
+    validations:
+      required: true
+
+  - type: input
+    id: harness-version
+    attributes:
+      label: DeepSeek Harness version
+      description: |
+        Shown in the app's About dialog. If you cannot find it, the diagnostics
+        command below reports `dshVersion` as well.
+      placeholder: '0.2.1-rc.3'
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part
+      options:
+        - Packing a modpack (selecting plugins)
+        - Installing a modpack
+        - The category tree
+        - Automatic classification
+        - The AI classification step
+        - Layout / the panel does not look right
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got instead.
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Browser console output
+      description: |
+        Open the panel, press F12 (or Ctrl+Shift+I), go to Console, and repeat
+        the action. Paste anything starting with `[dsh-modpack]` — the plugin
+        prefixes everything it logs, so unrelated noise can stay out.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: |
+        Run this in the panel's browser console (F12 → Console) and paste the
+        result. It prints the paths and capability flags this plugin actually
+        resolved, which is usually where a wrong-directory bug shows up.
+
+        ```js
+        fetch('/api/dsh-modpack/diag').then(r => r.json()).then(d => console.log(JSON.stringify(d, null, 2)))
+        ```
+      render: json
+    validations:
+      required: false
