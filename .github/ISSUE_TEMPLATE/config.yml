@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Installation and usage questions
+    url: https://github.com/search?q=topic%3Adsh-plugin&type=repositories
+    about: |
+      Please read README.md first — installation, the four classification
+      tiers, and the FAQ are all there. If your question is really "where do I
+      find plugins for this", the topic search above is the answer.
