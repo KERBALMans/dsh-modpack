@@ -180,6 +180,8 @@ dsh plugin --profile desktop add ./dsh-modpack-0.9.1.tgz
 
 装完在 **设置 → 插件整合包** 里。
 
+> ⚠️ **本插件没有发布到 npm。** `dsh-modpack` 这个名字在 npm 上属于另一个作者、另一个项目。请只从本仓库的 Release 下载 tgz，不要在插件管理器里直接填 `dsh-modpack`。
+
 ## 测试
 
 15 个检查套件 + 8 个变异套件（84 个变异），全部通过。CI 在 Node 20/22 × Linux/Windows 上跑全套。

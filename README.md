@@ -219,7 +219,21 @@ A category tree sits to the left of the plugin list — filing plugins and picki
 
 ## 安装 / Installation
 
-### 方式一：作为本地插件挂载（开发/自用）
+### 方式一：从 Release 下载 tgz（推荐，也是唯一的正式分发方式）
+
+到 [Releases](https://github.com/KERBALMans/dsh-modpack/releases) 下载最新的 `dsh-modpack-<版本>.tgz`，然后在命令行里：
+
+```bash
+dsh plugin --profile desktop add ./dsh-modpack-0.9.1.tgz
+```
+
+> ⚠️ **本插件没有发布到 npm。** `dsh-modpack` 这个名字在 npm 上属于另一个作者、另一个项目（`M1r0er/dsh-modpack`，版本停在 0.2.1）。**不要**在插件管理器里直接填 `dsh-modpack` —— 那会装成别人的插件。请始终用本仓库 Release 里的 tgz 文件路径。
+
+### 方式二：用 DSH 自带的插件管理器
+
+打开 **设置 → 插件 → 安装**，填入你**下载到本机的 tgz 完整路径**（例如 `C:\Users\你\Downloads\dsh-modpack-0.9.1.tgz`）。
+
+### 方式三：作为本地插件挂载（开发/自用）
 
 ```bash
 # 在 profile 目录下
@@ -237,11 +251,7 @@ pnpm add link:/path/to/dsh-modpack
 
 重启 DSH 客户端即可。
 
-### 方式二：用 DSH 自带的插件管理器
-
-在 **设置 → 插件 → 安装** 里填入本地路径或 npm 包名 `dsh-modpack`。
-
-### 方式三：导入别人分享的整合包
+### 方式四：导入别人分享的整合包
 
 直接用本插件打包出来的 `.dshmodpack.json` 在本插件的「导入」页里安装。
 
