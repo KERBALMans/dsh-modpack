@@ -1,0 +1,81 @@
+{
+  "name": "dsh-modpack",
+  "version": "0.9.0",
+  "description": "Modpack builder for DeepSeek Harness — pick any subset of your installed plugins, pack them into one portable .dshmodpack.json, and install that modpack into somebody else's Harness.",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "modpack",
+    "bundle",
+    "plugin-manager"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "scripts/check-tools.mjs",
+    "scripts/check-categories.mjs",
+    "scripts/check-tree-logic.mjs",
+    "scripts/check-drag.mjs",
+    "scripts/check-compat.mjs",
+    "scripts/check-autocat.mjs",
+    "scripts/check-remote.mjs",
+    "scripts/check-signals.mjs",
+    "scripts/check-online-ui.mjs",
+    "scripts/check-ai.mjs",
+    "scripts/check-metasource.mjs",
+    "scripts/check-profileroot.mjs",
+    "scripts/check-layout.mjs",
+    "scripts/check-future.mjs",
+    "scripts/mutate-remote.mjs",
+    "scripts/mutate-online-ui.mjs",
+    "scripts/mutate-ai.mjs",
+    "scripts/mutate-compat.mjs",
+    "scripts/mutate-metasource.mjs",
+    "scripts/mutate-layout.mjs",
+    "scripts/mutate-future.mjs",
+    "README.md",
+    "CHANGELOG.md",
+    "UPLOAD-GUIDE.md",
+    "LICENSE"
+  ],
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "scripts": {
+    "check": "node --check index.js && node --check client.js && node scripts/check-tools.mjs && node scripts/check-categories.mjs && node scripts/check-tree-logic.mjs && node scripts/check-drag.mjs && node scripts/check-compat.mjs && node scripts/check-autocat.mjs && node scripts/check-remote.mjs && node scripts/check-signals.mjs && node scripts/check-online-ui.mjs && node scripts/check-ai.mjs && node scripts/check-metasource.mjs && node scripts/check-profileroot.mjs && node scripts/check-layout.mjs && node scripts/check-future.mjs",
+    "test": "npm run check",
+    "publish:github": "node scripts/publish-github.mjs"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "dsh": ">=0.2.0-rc.1"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots"
+      ]
+    }
+  }
+}
